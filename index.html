@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>D3 Quick Start - Jamie Ball</title>
+	<script src="assets/d3.v3.min.js"></script>
+	<!-- d3.v3.min.js is the only script required for visualizations -->
+	<script src="assets/jquery.min.js"></script>
+	<!-- jQuery is required for loading external data for a visualization in a bulletproof way -->
+	<style>
+		body { margin: 0; padding: 0 0 30px; font-size: 14px; font-family: 'Arial'; background: #28292b; color: #fff; }
+		h1 { font-weight: normal; border-bottom: 1px solid #414245; display: block; width: 500px; margin: 30px auto 20px; padding: 0 0 10px; }
+		h2 { font-weight: normal; display: block; width: 500px; margin: 20px auto }
+		.example { width: 500px; height: 300px; margin: 0 auto; border: 1px solid #414245; }
+		.example01-div { margin: 15px; }
+		.axis path, .axis line { fill: none; stroke: #fff; }
+		.axis text { fill: #fff; }
+		.line { fill: none; stroke: #e59000; stroke-width: 1.5px; }
+		.brush .extent { stroke: #fff; fill-opacity: .125; shape-rendering: crispEdges; }
+	</style>
+</head>
+<body>
+<!-- Introduction -->
+	<h1>D3 Quick Start - Jamie Ball</h1>
+	<!-- D3 is easy to start using, simply include d3.v3.min.js before your custom scripts, and use it as a DOM manipulation library. All D3 does is add/edit/remove DOM elements, so we'll forget graphs or SVG to start with; but its functions are designed to play nicely with SVG, so we'll end up using it for that. -->
+<!-- Example 01 - Introduction to D3 -->
+	<h2 id="01">01 - Introduction to D3</h2>
+	<!-- This first example illustrates the basics of how D3 works. In order to use D3, you must select an element using d3.select(selector), then manipulate it using D3's methods. In this example, we will select the div with id select01 and append a div. We'll give the div a class of 'example01-div' and give it the text 'Hello world!'. D3 uses a chained syntax, so we can make our code as compressed or expanded as we like. -->
+	<div class="example" id="example01"></div>
+	<script>
+		d3.select("#example01") 
+		// Here you can see how the d3.select() method works
+			.append("div") 
+			// The .append() method can append any element type (eg: <rect>, <div> or <table>). It adds the element as a last child.
+			.attr("class", "example01-div") 
+			// The attr method requires 2 arguments and adds ' attrName="attrValue" ' to the element; we've added a class
+			.text("Hello world!"); 
+			// The text method is very simple, just pass in the text; note that you can use '' or "" in D3 methods. Only add a semi colon at the end of a code block to avoid 'unexpected' javascript errors.
+	</script>
+
+<!-- Example 02 - Introduction to SVG -->
+	<h2 id="02">02 - Introduction to SVG</h2>
+	<!-- SVG is an XML based vector drawing concept support by all modern web browsers (IE 9+, FF, Chrome and Safari...). Treat is SVG like html in D3. In this example, we will add an SVG canvas to the div with id 'example02', then add a rectangle which is coloured in blue. You should use this tutorial to help you understand how the XML/SVG syntax works. -->
+	<div class="example" id="example02"></div>
+	<script>
+		d3.select("#example02")
+		// yYou're used to this method now,
+			.append("svg") 
+			// Just as we appended a div, we're now going to append an SVG canvas
+				.attr("width", 500) 
+				// Give the SVG a width of 500px; SVG default is px, so 500 is fine, we want the SVG to fill the container
+				.attr("height", 300)
+				// It is also possible to get the with/height of the parent using vanilla javascript or using jQuery, the latter i would recommend using $(selector).width() or $(selector).height(); this returns an integer which is ideal, so .attr("width", $("#example02").width()).
+				.append("rect")
+				// <rect> is a standard SVG element, along with <line>, <circle> and <g> as other examples
+					.attr("width", 100)
+					.attr("height", 100)
+					.attr("x", 15)
+					.attr("y", 15)
+					// The attributes here will all be assigned to the DOM object, so we have added <rect width="100" height="100" x="15", y="15"> to our <svg> element.
+					.attr("fill", "#009fc3")
+					// Fill is like a CSS background-color style
+					.attr("stroke", "#fff")
+					// Stroke is like a css border, except half the stroke is inside the element, half is outside
+					.style("stroke-width", 2);
+					// Adding a style adds an inline style attribute to the element: style="stroke-width:2;".
+	</script>
+
+<!-- Example 03 - D3 And Data -->
+	<h2 id="03">03 - D3 And Data</h2>
+	<!-- So far, we could have done what we have done with jQuery; however the power of D3 becomes apparent when we need to create a visualization from a source of data; whether it is a json object, csv or tsv file. JSON is the most flexible format to use, as it becomes a javascript object or array once loaded. In the next example, we'll explore how we might get data from another source, but for now, we'll use an array of data. In this example, we'll use a data array to add three circles to an SVG canvas; but we'll plot their positions and set their radii using the data -->
+	<div class="example" id="example03"></div>
+	<script>
+		var example03data = [
+			{ x: 15, y: 15, radius: 5 },
+			{ x: 90, y: 90, radius: 10 },
+			{ x: 200, y: 200, radius: 15 }
+		];
+		// This is a javascript array of 3 objects, containing the data we will use to examine how D3 handles data
+		var svg = d3.select("#example03")
+			.append("svg");
+		// By setting our D3 selection to a variable, it becomes easier to reference multiple times, and keeps our code cleaner. As we have used an append method in this variable setting, the variable will actually reference the final selector, ie the svg, not the #example03 element.
+		svg.selectAll("cicle")
+		// To initialize a data manipulation, we must use D3s .selectAll(selectorWeAreGoingToAdd) method; this selector could be a class, or in this case, an element type.
+			.data(example03data)
+			// Here we are loading our dataset so d3 knows the data to read from
+			.enter()
+			// the enter method enters the data, and creates empty 'nodes' for every data element in our 'example03data' array. It only creates virtual nodes, it does not add anything to the DOM.
+			.append("circle")
+			// Now we have added a circle to the DOM for every item in the array of data
+				.attr("cx", function(d) { return d.x })
+				// The power of D3 lies in D3's data functions. Whenever we add a function to a D3 attribute, the vairable passed in holds the data object relating to that element. For example in the case of the first circle in this example, the d variable holds the object { x: 15, y: 15, radius: 5 }. We can then reference the original dat behind a circle.
+				.attr("cy", function(d) { return d.y })
+				// We do the same again here, but this time we want the y property. At this point it should be noted that the origin of the SVG cartesian coordinate system lies in the top left corner, moving right and down; this can allow a bit of 'fun' when we start drawing graphs, but we'll deal with that when we get there. 
+				.attr("r", function(d) { return d.radius })
+				// We have used three svg <circle> element properties here: cx, which is the circles x coordinate; cy, the y coordinate; and you'll never guess what the radius attribute does.
+				.attr("fill", "#e59000");
+				// We don't have to use a function to set an attribute though, we could just add a static attribute.
+	</script>
+
+<!-- Example 04 - Loading External Data -->
+	<h2 id="04">04 - Loading External Data</h2>
+	<!-- D3 has multiple methods to allow external data to be loaded; including d3.json() and d3.csv(). While these might be useful in a local example; in production, reliance on a more bulletproof method suh as jQuery ajax() would be preferrable, hence we will now use jQuery's ajax() method to load some data from assets/example04-data.json then render them in order using D3. -->
+	<div class="example" id="example04"></div>
+	<script>
+		$.ajax({
+		// This initializes an API request using jQuery's '$' selector
+			type: 'GET',
+			// GET | POST | DELETE are the usual options here
+			url: 'assets/example04-data.json',
+			// The URL to send the request to
+			dataType: "json",
+			// The type of data you are expecting at the url
+			success: renderExample04Visualization,
+			// The function to run once you have some useful data; the function variable will hold the JSON data object
+			error: function(error) { console.log("There was an error while attempting to load JSON data for Example 4:", error); }
+			// What to do if there was an error in the AJAX request or the response was not valid JSON
+		});
+		function renderExample04Visualization(JSONdata) {
+		// This function will be called once the above AJAX request has data. We could rename the function variable 'JSONdata' to anything, but it will hold the data from the AJAX request
+			console.log("Example 4 JSON Data:", JSONdata);
+			// This is just so we can see what the data looks like
+			var svg = d3.select("#example04").append("svg")
+			// You're used to this line by now
+			svg.selectAll("text").data(JSONdata).enter().append("text")
+			// We'll append a text element for every item 
+				.attr("x", function(d, i) { return i * 50 + 50 })
+				// D3's data function can actually have two variables passed, the first holds the data for that item and the second holds the item number as D3 is iterating through the array. So the first text element has an i value of 0, the second has an i value of 1 and so on. Here, we have positioned the text elements at 50i pixels from the left, and added and translated a further 50 pixels to the left.
+				.attr("y", 100)
+				// Just a standard y value; remeber it's from the top, not the bottom though; this will change when we start using scales to draw graphs though
+				.text(function(d) { return d })
+				// We're only using one variable in the function now, the data variable, d. d contains only a string of text in this case, as you can see from the assets/example04-data.json file.
+				.attr("fill", "#cbb677");
+				// Text cannot be coloured in svg using a css color attribute, it must be 'filled'.
+		}
+	</script>
+
+<!-- Example 05 - Scales And Axes -->
+	<h2 id="05">05 - Scales And Axes</h2>
+	<!-- D3's .scale() method is a more advanced way of plotting data than using an i variable as in the previous example. There are several types of D3 scales, including linear ( d3.scale().linear() ), ordinal ( d3.scale().ordinal() ) and time ( d3.time().scale() ) scales. The simplest scale is the linear scale. The concept is you define the domain and range of the scale, then you can use a linear scale variable to scale accordingly. This can be combined with D3's .min(), .max() and .extent() methods to dynamically create scales based on changing external data. But we'll use these more advanced methods when we draw a graph, for now we'll create a simple scale.
+
+	Axes in D3 are automatically generated SVG elements based on a scale which you have defined. In this example, we will create a linear scale and then draw an axis for that scale. We'll also add a circle with a scaled x position along the axis. -->
+	<div class="example" id="example05"></div>
+	<script>
+		var width = 500, height = 300, margin = { top: 30, left: 30, bottom: 30, right: 30 };
+		// It is usual to set the dimensuions of your canvas first and it's margins; this is particularly useful with complex visualizations
+		var svg = d3.select("#example05").append("svg")
+				.attr("width", width)
+				.attr("height", height)
+				.append("g")
+					.attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+		// In this block we have added an SVG to #example05 and a <g> element inside of the svg. <g> elements are simple container elements with only a top left anchor points and no width or height, they expand to the extermeties of their contents only. This <g> element is translated by margin.left, margin.top (rught and down) so that we have an area of padding between the border of example05 and our visualization. The variable svg is assigned to this new <g> element.
+		var x = d3.scale.linear()
+					.domain([0, 10])
+					.range([0, width - margin.left - margin.right])
+		// Here we have created our first scale. d3.scale.linear() tells d3 we wan the variable x to be a linear scale. By setting its domain, we are saying that the extermeties of our data will be these two values. D3 requires these two values to be entered as an array. In this case our data should have its extremeties at 0 and 10. The range is the output, which we want to be the width of our nicely spaced <g> element, which is the width - left margin - right margin. The range should also be passed as an array.
+		// To scale a value now, we could simply pass in x(5). This would return us an integer of the x coordinate which is mid way between the left and right sides of our svg (<g>). Lets try that:
+		console.log( "The x coordinate mid way between the left and right sides of #example05 is:", x(5) );
+		// To create a D3 axis, we must have defined a scale and an axis. We can then call the axis on a <g> element, which we usually give a class of 'axis'.
+		var xAxis = d3.svg.axis()
+						.scale(x)
+						.orient("bottom");
+		// Here we have defined an axis using D3's .svg.axis() method. A .scale() method is a requirement, passing in a varrible assigned to a predefined scale, but orient bottom ensures that the axis is a horizontal axis. Orienting to "left" or "right" creates a vertical axis.
+		svg.append("g")
+			.attr("class", "x axis")
+			.attr("transform", "translate(0, 15)")
+			.call(xAxis);
+		// It is not necessary to specify a class of the <g> element, but it is useful to styling (see in the <head> of this page, i have styled all .axis paths, lines and text white). Using the .call method upon an axis variable is of cource a requirement, however. You should inspect the xml structure of the axis generated here for future reference. D3 automatically adds ticks and lines to the axis, however there are many ways to customize axes, found in the D3 API documentation. For example, you may wish to specify the number of ticks, or their format.
+		svg.append("circle")
+			.attr("cx", x(5))
+			.attr("cy", 0)
+			.attr("r", 5)
+			.attr("fill", "#75339f")
+			.attr("stroke", "#fff")
+			.style("stroke-width", 2);
+		// Here we have appended a cicle to our svg which have a scaled cx attribute. This will come in handy when in the next example we are drawing a scatter chart. You don't need to use a .data attribute with D3 if you're only adding one element, just specify manually.
+	</script>
+
+<!-- Example 06 - A Basic Scatter Graph -->
+	<h2 id="06">06 - A Basic Scatter Graph</h2>
+	<!-- In this example, we will create a simple scatter graph using two scales, x and y. We will add a circle at each data point -->
+	<div class="example" id="example06"></div>
+	<script>
+		var example06data = [
+			{ x: 10, y: 20 },
+			{ x: 50, y: 10 },
+			{ x: 20, y: 15 },
+			{ x: 25, y: 35 },
+			{ x: 30, y: 5 }
+		];
+		// Here is our sample data set
+		var width = $("#example06").width(), 
+			height = $("#example06").height(), 
+			margin = { top: 30, left: 40, bottom: 40, right: 40 };
+		// We have used jQuery to dynamically get the width and height of the container. If we were using a fluid page layout, ie where the container size is relative to the user's viewport, this is very useful.
+		var svg = d3.select("#example06").append("svg").attr("width", width).attr("height", height).append("g").attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+		// This is identical to what we did in the previous example, however now we must define 2 scales and 2 axes, and append them both to different <g> elements in our svg.
+		var x = d3.scale.linear()
+		// defining a linear scale as before
+					.domain(d3.extent(example06data, function(d) { return d.x }))
+					// Here we have used D3's .extent() method. This method returns an array of min and max values of the specified property (x in this case). The method takes 2 arguments: source data variable and a return function to specify which property of each object to use.
+					.range([0, width - margin.left - margin.right]);
+		var y = d3.scale.linear()
+					.domain(d3.extent(example06data, function(d) { return d.y }))
+					// Alternatively, we could use D3's .min() and .max() methods in the same way to pass in an array manually to to the domain
+					.range([height - margin.top - margin.bottom, 0]);
+					// Notice the range of the Y axis is from height to 0 (ignoring margins), not from 0 to height. This has the effect of reversing the position of the original from top left to bottom left of the canvas we have created. If you ever have an axis which has increasing values down the canvas, reverse the range of the scale in this way.
+		var xAxis = d3.svg.axis().scale(x).orient("bottom");
+		var yAxis = d3.svg.axis().scale(y).orient("left");
+		// Here we have defined out 2 axes, just as in the previous example
+		svg.append("g").attr("class", "x axis").attr("transform", "translate(0," + ( height - margin.top - margin.bottom ) + ")").call(xAxis);
+		// The x axis has been appended in the usual way, with the exception of it's postion. By default, D3 will add the axes starting from the top left origin of its parent (as usual), so we must use the svg transform attribute to translate the a axis to the bottom of the y axis (ie height - top margin - bottom margin)
+		svg.append("g").attr("class", "y axis").call(yAxis);
+		// The Y axis is added simply. It should be noted however that axis tick labels and ticks are added outside of the expected axis region, ie only the line is added at the specified position, in this case, the top left origin. Therefore we must accommodate for the x axis labels with our margins. If you add an axis directly to an <svg> element, its tick labels will be hidden as they will be outside of the svg itself, they will be clipped off; hence the use of the inner <g> element which has likely seemed a little pointless up to now.
+		svg.selectAll("circle")
+			.data(example06data).enter().append("circle")
+				.attr("cx", function(d) { return x(d.x) })
+				.attr("cy", function(d) { return y(d.y) })
+				.attr("r", 5)
+				.attr("fill", "#009fc3")
+				.attr("stroke", "#fff")
+				.style("stroke-width", 2);
+		// In this block, we have added a circle for each item in the array of example06data; if you contruct the chart correctly, this bit is easy.
+	</script>
+
+<!-- Example 07 - A Basic Line Graph -->
+	<h2 id="07">07 - A Basic Line Graph</h2>
+	<!-- This example if very similar to the previous example, however it introduces how line graphs can be drawn in D3. In SVG, a path is an element which requires a 'd' attribute which specifies moveto, and lineto coordinates. D3 makes line graphs simple. You can define a d3.svg.line() with .x and .y methods to tell D3 how to interpret your data. You may then append a <path> to your svg with a d attribute of the line variable you have defined. We'll start this example with a compressed version of the previosu example, excluding circles. We'll then add a line instead, and for added complexity, we'll take a look at time scales too. -->
+	<div class="example" id="example07"></div>
+	<script>
+		var example07data = [
+			{ x: "2013-06-30 05:27:00", y: "5" },
+			{ x: "2013-06-30 13:26:00", y: "20" },
+			{ x: "2013-06-30 21:54:00", y: "30" },
+			{ x: "2013-07-02 10:09:00", y: "10" },
+			{ x: "2013-07-03 12:37:00", y: "25" }
+		];
+		// Here is our sample data set with time values as x properties formatted in SQL date format: yyyy-MM-dd HH:MM:SS and valus formatted as strings, not integers. Javascript struggles to parse integers from strings, so in this example, we will have to parse integers ( parseInt(value, 10) ) or floating point numbers ( parseFloat(value) )
+		var parseDate = d3.time.format("%Y-%m-%d %X").parse;
+		// In order to plot time in the browser using javascript, we must get a javascript date object. JavaScript measures time in milliseconds from 01/01/1970 00:00:00; but to save use caluclating what these time integers should be, D3 can take any time format and turn it into a plottable date object using d3.time.format(format). See the API documentation for D3 to see which formatting symbols you require for your source format.
+		// Having created this parse function, we can apply it when we need to return values.
+		var width = $("#example07").width(), height = $("#example07").height(), margin = { top: 30, left: 40, bottom: 40, right: 40 };
+		// Define width and margins
+		var svg = d3.select("#example07").append("svg").attr("width", width).attr("height", height).append("g").attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+		// create our <svg> with nested <g>
+		var x = d3.time.scale().domain(d3.extent(example07data, function(d) { return parseDate(d.x) })).range([0, width - margin.left - margin.right]);
+		// create our x scale ensuring to parse time from the strings - note this is now a time scale
+		var y = d3.scale.linear().domain(d3.extent(example07data, function(d) { return parseFloat(d.y) })).range([height - margin.top - margin.bottom, 0]);
+		// create our y scale ensuring to parse floating numbers from the strings
+		var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(5);
+		var yAxis = d3.svg.axis().scale(y).orient("left").ticks(5);
+		// Define axes as before, but define 5 as the rough number of x and y axis ticks, may be more or less than this as D3 likes to make things easy to read
+		svg.append("g").attr("class", "x axis").attr("transform", "translate(0," + ( height - margin.top - margin.bottom ) + ")").call(xAxis);
+		svg.append("g").attr("class", "y axis").call(yAxis);
+		// Add axes as before
+		var line = d3.svg.line()
+			.x(function(d) { return x(parseDate(d.x)) })
+			.y(function(d) { return y(parseFloat(d.y)) });
+		// This block defines how D3 should parse x and y values from your data to form the line's d attribute. Seems a little abstract, but it's quite logical really.
+		svg.append("path")
+			.datum(example07data)
+			.attr("class", "line")
+			.attr("d", line);
+		// Append an svg <path> element with the d attribute which D3 has created for us. Also give the path a classs of line for styling purposes.
+		// By default, a path is filled and has no stroke, so looks like an abstract shape; ensure to change this with styling, either directly or in css.
+	</script>
+
+<!-- Example 08 - Interactivity With d3.on() -->
+	<h2 id="08">08 - Interactivity With d3.on()</h2>
+	<!-- You will now have a basic understanding of how to create visualizations with D3; however D3 is much more powerful than this. In this example, we will explore how visualizations can be made interactive with on mouseover, mouseout and click events. When D3 draws a DOM element, it assigns all of the original data to it, so for example, if we had a data object with properties name, x position and y position, a .on() event has access to the whole data object, not just thex and y positions. Because of this, we can use our familiar d functions when interacting with visualizations.
+	In this example, we will create a simple bar chart which has hover and click events assigned to its bars. If you hover over a bar, the x and y positions of the bar will be outputted to the screen. If you click on a bar, the bar's details and color will be outputted to the screen.
+	 -->
+	<div class="example" id="example08"></div>
+	<script>
+		var example08data = [
+			{ "category": "A", "value": 2, "color": "#009fc3" },
+			{ "category": "B", "value": 5, "color": "#e59000" },
+			{ "category": "C", "value": 3, "color": "#a7a9ac" },
+			{ "category": "D", "value": 8, "color": "#cbb677" },
+			{ "category": "E", "value": 5, "color": "#007482" }
+		];
+		// Here is our data
+		var width = $("#example08").width(), height = $("#example08").height(), margin = { top: 30, left: 40, bottom: 40, right: 40 };
+		var svg = d3.select("#example08").append("svg").attr("width", width).attr("height", height).append("g").attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+		// Set up SVG as usual
+		svg.append("text").attr("class", "hover-text").attr("x", 40).attr("y", 60).attr("fill", "#fff");
+		svg.append("text").attr("class", "click-text").attr("x", 40).attr("y", 40).attr("fill", "#fff");
+		// Append 2 text elements with no text in them to hold our interactive messages
+		var x = d3.scale.ordinal().domain(example08data.map(function(d) { return d.category; })).rangeRoundBands([0, width - margin.left - margin.right], 0.2);
+		// We are going to use an ordinal axis for the bar chart; we have a set number of ordinates; though D3 will scale the widths for us using rangeRoundBands. The value 0.2 is the separation of bars.
+		var y = d3.scale.linear().domain([0, d3.max(example08data, function(d) { return d.value; })]).range([height - margin.top - margin.bottom, 0]);
+		// Here we are using d3.max and 0 as our range as bars should start from 0 in my opion
+		var xAxis = d3.svg.axis().scale(x).orient("bottom");
+		var yAxis = d3.svg.axis().scale(y).orient("left");
+		// Define axes
+		svg.append("g").attr("class", "x axis").attr("transform", "translate(0," + ( height - margin.top - margin.bottom ) + ")").call(xAxis);
+		svg.append("g").attr("class", "y axis").call(yAxis);
+		// Add axes
+		svg.selectAll("rect").data(example08data).enter().append("rect")
+		// We are going to append <rect> alements according to the example08data dataset
+			.attr("width", x.rangeBand())
+			// x.rangeBand() is D3's calculated width for the number of bars as calculated by our x scale
+			.attr("x", function(d) { return x(d.category); })
+			// Return the category which will map to the ordinates of the x scale (and axis)
+			.attr("y", function(d) { return y(d.value); })
+			// The bar will be drawn starting from the y value then drawn downwards, not updwards as we would assume
+			.attr("height", function(d) { return (height - margin.top - margin.bottom) - y(d.value); })
+			// The bat will have a height of scaled to its value
+			.attr("fill", "#75339f")
+			// Fill the bars purple
+			.on("mouseover", function(d) {
+				d3.select(this).attr("fill", d.color);
+				d3.select(".hover-text")
+					.text("You are hovering over: " + d.category + ", " + d.value);
+			})
+			// Using a .on() method and specifying click, mouseover or mouseout allows for an function to be executed and the d object once again utilized. Here, d is used to color and provide text for our '.hover-text' element.
+			.on("mouseout", function(d) {
+				d3.select(this).attr("fill", "#75339f");
+				d3.select(".hover-text").text("");
+			})
+			// This resets .hover-text on mouse out
+			.on("click", function(d) {
+				d3.select(".click-text")
+					.text("You clicked on: " + d.category + ", " + d.value)
+					.attr("fill", d.color);
+			});
+			// "click" works in the same way as mouseover and mouseout.
+	</script>
+
+<!-- Example 09 - Interactivity With d3.brush() -->
+	<h2 id="09">09 - Interactivity With d3.brush()</h2>
+	<!-- Brushing is an extremely useful feature in D3, and is either a 1 or 2 dimensional way of drawing upon an svg. The values of this brush can then be obtained both at the start end and while brushing. This means functions can be executed in real time while the user brushes. In this example, we will create set of axes and add a 2 dimensional brush which prints out to the screen the start and end brush values, as well as the real time brush value -->
+	<div class="example" id="example09"></div>
+	<script>
+		var width = 500, height = 300, margin = { top: 30, left: 40, bottom: 40, right: 40 };
+		var svg = d3.select("#example09").append("svg").attr("width", width).attr("height", height).append("g").attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+		var x = d3.scale.linear().domain([0, 10]).range([0, width - margin.left - margin.right]);
+		var y = d3.scale.linear().domain([0, 10]).range([height - margin.top - margin.bottom, 0]);
+		var xAxis = d3.svg.axis().scale(x).orient("bottom");
+		var yAxis = d3.svg.axis().scale(y).orient("left");
+		svg.append("g").attr("class", "x axis").attr("transform", "translate(0," + ( height - margin.top - margin.bottom ) + ")").call(xAxis);
+		svg.append("g").attr("class", "y axis").call(yAxis);
+		// set up an svg with 2 linear axes [0, 10]
+		svg.append("text").attr("class", "example09-text").attr("fill", "#fff").attr("x", 10).attr("y", 10);
+		var brush = d3.svg.brush()
+		// define the brush
+		    .x(x)
+		    // define the horizontal scale which the brush will use
+		    .y(y)
+		    // define the vertical scale which the brush will use - defining more than one scale makes the brush a 2 dimensional brush
+		    .on("brushstart", brushstart)
+		    // define a function to be executed when a brush is started
+		    .on("brush", brushing)
+		    // define a function to execute every time the brush moves; executes continously while brushing is in progress
+		    .on("brushend", brushend);
+		    // define a function to execute when the user stops brushing
+		svg.append("g")
+      		.attr("class", "x y brush")
+      		.call(brush);
+      	function brushstart() {
+      		// code to be executed on brush start
+      	}
+      	function brushing() {
+      		// This is executed when brush is in progress
+      		d3.select(".example09-text").text("(" + 
+      			parseFloat(brush.extent()[0][0]).toFixed(1) + ", " + 
+      			parseFloat(brush.extent()[0][1]).toFixed(1) + ") (" + 
+      			parseFloat(brush.extent()[1][0]).toFixed(1) + ", " + 
+      			parseFloat(brush.extent()[1][1]).toFixed(1) + ")");
+      		// We can call the .extent() of a brush at any point, though it makes sense to call it while a brush is in progress.
+      		// For a 1D brush, brush.extent() is an array of 2 values; for a 2D brush such as this, brush.extent() is an array of 2 array, bottom left and top right coordinates of the brush.
+      	}
+      	function brushend() {
+      		// code to be executed on brush end
+      	}
+	</script>
+	
+<!-- Example 10 - Transitions -->
+	<h2 id="10">10 - Interactivity With Transitions</h2>
+	<!-- In this example, we will look at how D3's .transition() method works. We'll create an SVG with a rectangle. On click, we'll translate it 50 pixels to the right. We'll also investigate an alternative way of setting widths and heights of the svg and g elements -->
+	<div class="example" id="example10"></div>
+	<script>
+		var margin = { top: 30, left: 30, bottom: 30, right: 30 },
+			width = $("#example10").width() - margin.left - margin.right,
+			height = $("#example10").height() - margin.top - margin.bottom;
+		// Here we have set the width to the width of the padded g element, so that we don't have to worry about margins in the later code. For example, in the 'basic scatter graph' example, we said that the range of x was 'width - margin.left - margin.right'; using this example's method, we would only have to write 'width' - this is just a different way of doing things.
+		var svg = d3.select("#example10").append("svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+		// The only thing we had to change to achieve this alternative approach was to make the svg width 'width + left margin + right largin' and height 'height + top margin + bottom margin'
+		svg.append("rect")
+			.attr("width", 100)
+			.attr("height", 100)
+			.attr("x", 0)
+			// We'll give the rectangle an x position of 0 as we'll want to alter this attribute, so will need it's current value on click
+			.attr("y", 20)
+			.attr("class", "transition-rect")
+			.attr("fill", "#009fc3")
+			.style("stroke", "#fff")
+			.style("stroke-width", "2px")
+			.style("cursor", "pointer")
+			.on("click", function() {
+				var currentX = parseInt(d3.select(this).attr("x"), 10);
+				// Here we are using D3's .attr method to get rather than set an attribute
+				d3.select(this)
+					.transition()
+					// to initialize a transition, simply call a .transition() method upon any D3 selection
+					.duration(300)
+					// optionally, we can set a duration
+					.attr("x", (currentX + 50));
+					// finally we can add/edit/change attributes, and we coudl even use function(d)'s for even more flexibility.
+					// please note however that D3's .html() attribute cannot be called upon a transition method, therefore if you needed to change the html content and carry out a transition, you would have to use the following code format:
+					// selector.html(newHTML).transition().attr(...)
+			});
+			svg.append("text").text("Reset")
+				.attr("fill", "#fff")
+				.style("cursor", "pointer")
+				.on("click", function() {
+					d3.select(".transition-rect").transition().duration(300).attr("x", 0);
+				});
+	</script>
+	
+</body>
+</html>
