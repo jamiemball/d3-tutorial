@@ -3,7 +3,7 @@ d3-tutorial
 
 D3 Tutorial
 
-This is a semi-interactive D3 tutorial which should help you get well on the way to mastering D3 in a short period of time.
+This is a semi-interactive D3.js tutorial which should help you get well on the way to mastering D3 in a short period of time.
 
 Having spent a long time trawling through tutorials and books trying to get to grips with D3, I realised that there was no easy way to get started with D3, '3 circles' was the simplest it got.
 
